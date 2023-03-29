@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:finantial_manager/Models/transaction.model.dart';
 import 'package:finantial_manager/Repositories/transaction.repository.dart';
 
 class TransactionController {
-  static Future<List<TransactionModel>> getAll() async {
-    final res = await TransactionRepository.getAll();
+  static Future<List<TransactionModel>> getAll(
+      DateTime since, DateTime until) async {
+    final res = await TransactionRepository.getAll(since, until);
     List<TransactionModel> transactions = [];
     for (var i = 0; i < res.data.length; i++) {
       transactions.add(TransactionModel.fromJson(res.data[i]));
@@ -13,8 +12,9 @@ class TransactionController {
     return transactions;
   }
 
-  static Future<List<TransactionModel>> filterByType(int? type) async {
-    final res = await TransactionRepository.filterByType(type);
+  static Future<List<TransactionModel>> filterByType(
+      int? type, DateTime since, DateTime until) async {
+    final res = await TransactionRepository.filterByType(type, since, until);
     List<TransactionModel> transactions = [];
     for (var i = 0; i < res.data.length; i++) {
       transactions.add(TransactionModel.fromJson(res.data[i]));

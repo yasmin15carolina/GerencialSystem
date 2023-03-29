@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:finantial_manager/Models/transaction.model.dart';
 import 'package:finantial_manager/helpers/excel.dart';
 import 'package:finantial_manager/widgets/dialogs.dart';
+import 'package:finantial_manager/widgets/period.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:open_filex/open_filex.dart';
@@ -18,9 +19,13 @@ enum FilterTypes {
   const FilterTypes(this.code);
 }
 
+DateTime since = DateTime.now().copyWith(day: DateTime.now().day - 7);
+DateTime until = DateTime.now();
+
 // ignore: must_be_immutable
 class TransactionsView extends StatefulWidget {
   final List<TransactionModel> transactions;
+
   const TransactionsView({super.key, required this.transactions});
 
   @override
@@ -34,29 +39,23 @@ class _TransactionsViewState extends State<TransactionsView> {
     transactions = widget.transactions;
   }
 
-  // final f = DateFormat('dd/MM/yyyy\nhh:mm');
-
-  // int nPagination = 6;
-  // int index = 0;
-
-  // int getEndOFList(List<TransactionModel> transactions) {
-  //   int i = (transactions.length - 1 - index * nPagination > nPagination)
-  //       ? index * nPagination + nPagination
-  //       : transactions.length;
-  //   return i;
-  // }
-
   int? filter;
-
-  // final formatDay = DateFormat('dd/MM/yyyy');
-  // final formatHour = DateFormat('HH:mm');
 
   List<TransactionModel> transactionsAll = [];
   List<TransactionModel> transactions = [];
+
+  setSince(DateTime newSince) {
+    since = newSince;
+  }
+
+  setUntil(DateTime newUntil) {
+    until = newUntil;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: TransactionController.filterByType(filter),
+      future: TransactionController.filterByType(filter, since, until),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -71,39 +70,61 @@ class _TransactionsViewState extends State<TransactionsView> {
         // List<TransactionModel> transactions =
         //     snapshot.data as List<TransactionModel>;
         return Scaffold(
+          // floatingActionButton: FloatingActionButton(onPressed: () {
+          //   print(since);
+          //   print(until);
+          // }),
           body: Container(
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List<Widget>.generate(
-                      3,
-                      (int index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ChoiceChip(
-                            label: Text(FilterTypes.values[index].name),
-                            selected: filter == FilterTypes.values[index].code,
-                            onSelected: (bool selected) async {
-                              if (selected) {
-                                filter = FilterTypes.values[index].code != 0
-                                    ? FilterTypes.values[index].code
-                                    : null;
-                              }
-                              transactions =
-                                  await TransactionController.filterByType(
-                                      filter);
-                              setState(() {
-                                // nPagination = 6;
-                                // index = 0;
-                              });
-                            },
-                          ),
-                        );
-                      },
-                    ).toList()),
+                PeriodSinceUntil(
+                  since: since,
+                  until: until,
+                  setSince: setSince,
+                  setUntil: setUntil,
+                  search: () async {
+                    transactions = await TransactionController.filterByType(
+                        filter, since, until);
+                    setState(() {});
+                  },
+                ),
+                Container(
+                  // margin:
+                  //     const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List<Widget>.generate(
+                        3,
+                        (int index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ChoiceChip(
+                              label: Text(FilterTypes.values[index].name),
+                              selected:
+                                  filter == FilterTypes.values[index].code,
+                              onSelected: (bool selected) async {
+                                if (selected) {
+                                  filter = FilterTypes.values[index].code != 0
+                                      ? FilterTypes.values[index].code
+                                      : null;
+                                }
+                                transactions =
+                                    await TransactionController.filterByType(
+                                        filter, since, until);
+                                setState(() {
+                                  // nPagination = 6;
+                                  // index = 0;
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      ).toList()),
+                ),
                 TransactionList(
                   transactions: transactions,
                 )
@@ -153,46 +174,6 @@ class _TransactionListState extends State<TransactionList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              transactions.length == nPagination
-                  ? "1/1"
-                  : "${index + 1}/${transactions.length ~/ nPagination + 1}",
-            ),
-            IconButton(
-              onPressed: () async {
-                Excelfile e = Excelfile();
-                String path = await e.exportTransactions();
-                OpenFilex.open(path).then((value) => Dialogs.show(
-                    context: context,
-                    content: value.message,
-                    title: "Abrir arquivo"));
-              },
-              icon: const Icon(Icons.download),
-            ),
-            IconButton(
-              onPressed: () async {
-                FilePickerResult? result = await FilePicker.platform.pickFiles(
-                    allowedExtensions: ['xlsx'], type: FileType.custom);
-
-                if (result != null) {
-                  Excelfile e = Excelfile();
-                  await e.readTransactions(result.files.single.path!);
-                  setState(() {});
-                  Dialogs.show(
-                      context: context,
-                      content: "Os dados foram importados!",
-                      title: "Importar Dados");
-                } else {
-                  // User canceled the picker
-                }
-              },
-              icon: const Icon(Icons.upload),
-            ),
-          ],
-        ),
         Scrollbar(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -248,7 +229,8 @@ class _TransactionListState extends State<TransactionList> {
                                   e.value = double.parse(valueController.text);
                                   await TransactionController.update(e);
                                   transactions =
-                                      await TransactionController.getAll();
+                                      await TransactionController.getAll(
+                                          since, until);
                                   setState(() {});
                                 },
                               );
@@ -262,7 +244,8 @@ class _TransactionListState extends State<TransactionList> {
                                   onConfirm: () async {
                                     await TransactionController.delete(e.id!);
                                     transactions =
-                                        await TransactionController.getAll();
+                                        await TransactionController.getAll(
+                                            since, until);
                                     setState(() {});
                                   });
                             },
@@ -270,6 +253,46 @@ class _TransactionListState extends State<TransactionList> {
                         ]))
                     .toList()),
           ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              transactions.length == nPagination
+                  ? "1/1"
+                  : "${index + 1}/${transactions.length ~/ nPagination + 1}",
+            ),
+            IconButton(
+              onPressed: () async {
+                Excelfile e = Excelfile();
+                String path = await e.exportTransactions();
+                OpenFilex.open(path).then((value) => Dialogs.show(
+                    context: context,
+                    content: value.message,
+                    title: "Abrir arquivo"));
+              },
+              icon: const Icon(Icons.download),
+            ),
+            IconButton(
+              onPressed: () async {
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
+                    allowedExtensions: ['xlsx'], type: FileType.custom);
+
+                if (result != null) {
+                  Excelfile e = Excelfile();
+                  await e.readTransactions(result.files.single.path!);
+                  setState(() {});
+                  Dialogs.show(
+                      context: context,
+                      content: "Os dados foram importados!",
+                      title: "Importar Dados");
+                } else {
+                  // User canceled the picker
+                }
+              },
+              icon: const Icon(Icons.upload),
+            ),
+          ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

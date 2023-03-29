@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:finantial_manager/helpers/theme_manager.dart';
 import 'package:finantial_manager/views/home.view.dart';
 import 'package:finantial_manager/views/login.view.dart';
-import 'package:finantial_manager/views/singin.view.dart';
+import 'package:finantial_manager/views/signup.view.dart';
 import 'package:finantial_manager/views/transaction.view.dart';
+import 'package:finantial_manager/views/welcome.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,16 +36,15 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
-  void initState() {
-    themeManager.addListener(themeListener);
-    super.initState();
-    themeManager.addListener(themeListener);
+  void dispose() {
+    themeManager.removeListener(themeListener);
+    super.dispose();
   }
 
   @override
-  void dispose() {
-    themeManager.removeListener(themeListener());
-    super.dispose();
+  void initState() {
+    themeManager.addListener(themeListener);
+    super.initState();
   }
 
   themeListener() {
@@ -60,35 +60,22 @@ class _MyAppState extends State<MyApp> {
     ]);
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Finantial Manager',
         themeMode: themeManager.themeMode,
         theme: ThemeData(
-            // primarySwatch: Colors.red,
-            useMaterial3: true,
-            colorSchemeSeed: const Color(0xff6750a4),
-            appBarTheme: const AppBarTheme(centerTitle: true, elevation: 20),
-            // colorSchemeSeed: Colors.blue,
-            // colorScheme: ColorScheme(
-            //   primary: Colors.red,
-            //   brightness: Brightness.light,
-            //   onPrimary: Colors.white,
-            //   secondary: Colors.red,
-            //   onSecondary: Colors.white,
-            //   surface: Colors.white,
-            //   background: Colors.brown[50]!,
-            //   error: Colors.red,
-            //   onBackground: Colors.white,
-            //   onError: Colors.red,
-            //   onSurface: Colors.white,
-            // ),
-            brightness: Brightness.light),
+          // primarySwatch: Colors.red,
+          useMaterial3: true,
+          colorSchemeSeed: const Color(0xff6750a4),
+          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 20),
+          brightness: Brightness.light,
+        ),
         darkTheme: ThemeData(
-            // primarySwatch: Colors.red,
-            useMaterial3: true,
-            colorSchemeSeed: const Color(0xff6750a4),
-            appBarTheme: const AppBarTheme(centerTitle: true, elevation: 20),
-            brightness: Brightness.dark),
-        home: LoginView());
+          useMaterial3: true,
+          colorSchemeSeed: const Color(0xff6750a4),
+          appBarTheme: const AppBarTheme(centerTitle: true, elevation: 20),
+          brightness: Brightness.dark,
+        ),
+        home: WelcomeView());
   }
 }
 

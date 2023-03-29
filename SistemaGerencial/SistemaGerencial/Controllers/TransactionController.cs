@@ -24,20 +24,20 @@ namespace SistemaGerencial.Controllers
         }
         
         [HttpGet, Authorize]
-        public async Task<ActionResult<List<TransactionDto>>> getAllAsync([FromHeader] TransactionType type)
+        public async Task<ActionResult<List<TransactionDto>>> getAllAsync([FromHeader] TransactionType type, [FromQuery] DateTime since, [FromQuery] DateTime until)
         {
             var userId= HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
 
             if (type != 0)
             {
-                var obj = await _transactionRepository.GetByType(type, Int32.Parse(userId));
+                var obj = await _transactionRepository.GetByType(type, Int32.Parse(userId),since,until);
                 return Ok(obj);
 
             }
             else
             {
-                var obj = await _transactionRepository.GetAll(Int32.Parse(userId));
+                var obj = await _transactionRepository.GetAll(Int32.Parse(userId),since,until);
                 return Ok(obj);
 
             }
@@ -119,7 +119,7 @@ namespace SistemaGerencial.Controllers
             try
             {
                 var obj = await _transactionRepository.Delete(id, Int32.Parse(userId));
-                return Ok(new { Message = $"Transação: {id} Deletada!" });
+                return Ok(new { Message = $"Transaction: {id} Deleted!" });
 
             }
             catch (Exception ex)
@@ -131,18 +131,18 @@ namespace SistemaGerencial.Controllers
 
         }
 
-        [HttpGet("Period")]
-        public async Task<ActionResult<TransactionDto>> GetFromPeriod([FromQuery] DateTime start, [FromQuery] DateTime end)
+        [HttpGet("Period"), Authorize]
+        public async Task<ActionResult<TransactionDto>> GetFromPeriod([FromQuery] DateTime since, [FromQuery] DateTime until)
         {
             try
             {
-                var obj = await _transactionRepository.filterPeriod(start,end);
+                var obj = await _transactionRepository.GetAll(Int32.Parse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)),since,until);
 
                 return Ok(obj);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Message = "Transação não encontrada" });
+                return BadRequest(new { Message = "Transaction not found" });
             }
         }
 

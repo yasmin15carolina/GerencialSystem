@@ -9,13 +9,15 @@ class TextInputField extends StatefulWidget {
   List<TextInputFormatter>? inputFormatters;
   FocusNode? focusNode;
   bool obscure;
+  String? Function(String?)? validator;
   TextInputField(
       {super.key,
       required this.controller,
       required this.label,
       this.keyboardType,
       this.inputFormatters,
-      this.obscure = false});
+      this.obscure = false,
+      this.validator});
 
   @override
   State<TextInputField> createState() => _TextInputFieldState();
@@ -30,6 +32,7 @@ class _TextInputFieldState extends State<TextInputField> {
           controller: widget.controller,
           keyboardType: widget.keyboardType,
           inputFormatters: widget.inputFormatters,
+          validator: widget.validator,
           focusNode: widget.focusNode,
           obscureText: widget.obscure,
           decoration: InputDecoration(

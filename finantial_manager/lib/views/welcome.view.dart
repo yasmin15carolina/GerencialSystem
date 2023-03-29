@@ -8,12 +8,12 @@ import 'package:flutter/services.dart';
 import '../controllers/user.controller.dart';
 import '../view-models/login.viewmodel.dart';
 
-class WelcomePage extends StatefulWidget {
+class WelcomeView extends StatefulWidget {
   @override
-  _WelcomePageState createState() => _WelcomePageState();
+  _WelcomeViewState createState() => _WelcomeViewState();
 }
 
-class _WelcomePageState extends State<WelcomePage> {
+class _WelcomeViewState extends State<WelcomeView> {
   @override
   void initState() {
     Future.delayed(const Duration(seconds: 3), () async {
@@ -24,6 +24,7 @@ class _WelcomePageState extends State<WelcomePage> {
             username: localStorage.getString('username')!,
             password: localStorage.getString('password')!));
       }
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
@@ -49,13 +50,29 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Welcome to the Finantial Manager APP"),
-      // color: Colors.white,
-      // child: Image.asset(
-      //   "assets/images/logo.png",
-      //   scale: 2,
-      // ),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+      ),
+      body: const Center(
+        child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.attach_money_outlined,
+              size: 100,
+            )
+            // child: Text(
+            //   "Welcome to the Finantial Manager APP",
+            //   textAlign: TextAlign.center,
+            //   style: TextStyle(fontSize: 50),
+            // ),
+            ),
+        // color: Colors.white,
+        // child: Image.asset(
+        //   "assets/images/logo.png",
+        //   scale: 2,
+        // ),
+      ),
     );
   }
 }

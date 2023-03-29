@@ -1,6 +1,7 @@
 import 'package:finantial_manager/Models/user.model.dart';
 import 'package:finantial_manager/views/login.view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 
@@ -24,80 +25,81 @@ class _ProfileViewState extends State<ProfileView> {
       return const Icon(Icons.sunny);
     },
   );
-  bool teste = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text("Profile"),
         leading: Center(),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: [
-            setCard("Name", UserModel().name),
-            setCard("Username", UserModel().username),
-            setCard("Email", UserModel().email),
-            setCardTheme(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FilledButton(
-                    child: const Text("Logout"),
-                    onPressed: () {
-                      UserModel.destroy();
-                      localStorage.clear();
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const LoginView(),
-                      ));
-                    },
-                  ),
-                ],
-              ),
+      body: ListView(
+        children: [
+          setCardUser("Name", UserModel().name),
+          setCardUser("Username", UserModel().username),
+          setCardUser("Email", UserModel().email),
+          setCardTheme(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FilledButton(
+                  child: const Text("Logout"),
+                  onPressed: () {
+                    UserModel.destroy();
+                    localStorage.clear();
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const LoginView(),
+                    ));
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
 
-  Widget setCard(String label, String? value) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Text(
-          "$label: $value",
-          style: const TextStyle(fontSize: 20),
+  Widget setCardUser(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 5),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Text(
+            "$label: $value",
+            style: const TextStyle(fontSize: 20),
+          ),
         ),
       ),
     );
   }
 
   Widget setCardTheme() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Theme Mode",
-              style: TextStyle(fontSize: 20),
-            ),
-            Switch(
-              thumbIcon: thumbIcon,
-              value: themeManager.themeMode == ThemeMode.dark,
-              onChanged: (bool value) {
-                setState(() {
-                  themeManager.toggleTheme(value);
-                });
-              },
-            ),
-          ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 5),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Theme Mode",
+                style: const TextStyle(fontSize: 20),
+              ),
+              Switch(
+                thumbIcon: thumbIcon,
+                value: themeManager.themeMode == ThemeMode.dark,
+                onChanged: (bool value) {
+                  setState(() {
+                    themeManager.toggleTheme(value);
+                  });
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

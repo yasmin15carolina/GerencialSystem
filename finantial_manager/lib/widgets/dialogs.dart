@@ -12,7 +12,7 @@ class Dialogs {
           content: Text(content!),
           actions: <Widget>[
             FilledButton(
-              child: const Text("Fechar"),
+              child: const Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -34,7 +34,7 @@ class Dialogs {
           actions: <Widget>[
             // define os botões na base do dialogo
             FilledButton(
-              child: const Text("Fechar"),
+              child: const Text("Close"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -66,18 +66,18 @@ class Dialogs {
         );
 
         return AlertDialog(
-          title: const Text("Editar"),
+          title: const Text("Edit"),
           content: SizedBox(
-            height: MediaQuery.of(context).size.height / 4,
+            height: MediaQuery.of(context).size.height / 4.5,
             child: Column(
               children: [
                 TextInputField(
                   controller: movimentacao,
-                  label: "Descrição",
+                  label: "Description",
                 ),
                 TextInputField(
                   controller: valor,
-                  label: "Valor",
+                  label: "Value",
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: [
@@ -85,6 +85,7 @@ class Dialogs {
                         RegExp(r'^\d+\.?\d{0,2}')),
                   ],
                 ),
+
                 // Row(
                 //   mainAxisAlignment: MainAxisAlignment.center,
                 //   children: [
@@ -131,21 +132,20 @@ class Dialogs {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // retorna um objeto do tipo Dialog
         return AlertDialog(
-          title: const Text("Deletar"),
-          content: const Text("Excluir item?"),
+          title: const Text("Delete"),
+          content:
+              const Text("Are you sure you want to delete this transaction?"),
           actions: <Widget>[
-            // define os botões na base do dialogo
             FilledButton(
-              child: const Text("Ok"),
+              child: const Text("Yes"),
               onPressed: () {
                 onConfirm();
                 Navigator.of(context).pop();
               },
             ),
             FilledButton(
-              child: const Text("Cancelar"),
+              child: const Text("No"),
               onPressed: () {
                 Navigator.of(context).pop();
               },

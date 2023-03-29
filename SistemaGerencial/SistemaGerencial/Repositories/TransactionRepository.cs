@@ -41,7 +41,7 @@ namespace SistemaGerencial.Repositories
 
             if (transaction == null)
             {
-                throw new Exception($"Usuário de id: {id} não foi encontrado");
+                throw new Exception($"User id: {id} not found");
             }
 
             _dbContext.Transactions.Remove(transaction);
@@ -49,15 +49,15 @@ namespace SistemaGerencial.Repositories
             return true;
         }
 
-        public async Task<List<TransactionModel>> GetAll(int userId)
+        public async Task<List<TransactionModel>> GetAll(int userId, DateTime since, DateTime until)
         {
             //return await _dbContext.Transactions.ToListAsync();
-            return await _dbContext.Transactions.Where(x=> x.User.Id == userId).ToListAsync();
+            return await _dbContext.Transactions.Where(x=> x.User.Id == userId && x.DateTime >= since && x.DateTime <= until).ToListAsync();
         }
 
-        public async Task<List<TransactionModel>> GetByType(TransactionType type,int userId)
+        public async Task<List<TransactionModel>> GetByType(TransactionType type,int userId, DateTime since, DateTime until)
         {
-            return await _dbContext.Transactions.Where(x => x.Type == type && x.User.Id == userId).ToListAsync();
+            return await _dbContext.Transactions.Where(x => x.Type == type && x.User.Id == userId && x.DateTime >= since && x.DateTime <= until).ToListAsync();
         }
 
         public async Task<TransactionModel> GetById(int id,int userId)
@@ -77,7 +77,7 @@ namespace SistemaGerencial.Repositories
            var transactionToUpdate = await GetById(transaction.Id,userId);
             if (transactionToUpdate == null)
             {
-                throw new Exception($"Usuário de id: {transaction.Id} não foi encontrado");
+                throw new Exception($"Transaction: {transaction.Id} not found");
             }
             //transactionToUpdate.DateTime = DateTime.UtcNow;
             transactionToUpdate.Description = transaction.Description;
@@ -89,11 +89,6 @@ namespace SistemaGerencial.Repositories
             _dbContext.SaveChanges();
 
             return transactionToUpdate;
-        }
-
-        public async Task<List<TransactionModel>> filterPeriod(DateTime start, DateTime end)
-        {
-            return await _dbContext.Transactions.Where(x => x.DateTime >= start && x.DateTime<= end ).ToListAsync();
         }
 
     }

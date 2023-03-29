@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:finantial_manager/Repositories/user.repository.dart';
 import 'package:finantial_manager/controllers/transaction.controller.dart';
 import 'package:finantial_manager/helpers/constantes.dart';
+import 'package:finantial_manager/main.dart';
 import 'package:finantial_manager/views/input.view.dart';
 import 'package:finantial_manager/views/profile.view.dart';
 import 'package:finantial_manager/views/transaction.view.dart';
@@ -24,7 +25,8 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () async {
-      transactions = await TransactionController.getAll();
+      transactions =
+          await TransactionController.getAll(DateTime(1900), DateTime(2500));
     });
     TransactionRepository.setMiddleware();
   }
@@ -41,11 +43,11 @@ class _HomeViewState extends State<HomeView> {
       //   entrada: const [],
       // ),
       // const ResultsPage()
-      InputView(),
+      const InputView(),
       TransactionsView(
         transactions: transactions,
       ),
-      ProfileView()
+      const ProfileView()
       // Icon(Icons.grid_3x3),
     ];
     return Scaffold(
@@ -60,27 +62,80 @@ class _HomeViewState extends State<HomeView> {
           selectedIndex: index,
           onDestinationSelected: (index) async {
             if (index == 1) {
-              transactions = await TransactionController.getAll();
+              transactions = await TransactionController.getAll(
+                  DateTime(1900), DateTime(2500));
             }
             setState(() {
               this.index = index;
             });
           },
-          destinations: const [
-            NavigationDestination(
+          destinations: [
+            const NavigationDestination(
                 icon: Icon(Icons.attach_money), label: "Input"),
             NavigationDestination(
-                icon: Icon(
-                  Icons.grid_on_outlined,
-                ),
+                icon: makeTransactionsIcon(Theme.of(context).brightness ==
+                        Brightness.dark
+                    ? Colors.white
+                    : Colors
+                        .black), //Icon(Icons.attach_money_outlined, color: Colors.red),
                 label: "Transactions"),
             // NavigationDestination(
             //     icon: Icon(Icons.grid_on_rounded, color: Colors.green),
             //     label: "Entrada"),
-            NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
+            const NavigationDestination(
+                icon: Icon(Icons.person), label: "Profile"),
           ],
         ),
       ),
+    );
+  }
+
+  Widget makeTransactionsIcon(Color color) {
+    const width = 4.5;
+    const space = 3.5;
+    double scale = 0.8;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Container(
+          width: width,
+          height: 10 * scale,
+          color: color.withOpacity(0.4),
+        ),
+        const SizedBox(
+          width: space,
+        ),
+        Container(
+          width: width,
+          height: 28 * scale,
+          color: color.withOpacity(0.8),
+        ),
+        const SizedBox(
+          width: space,
+        ),
+        Container(
+          width: width,
+          height: 42 * scale,
+          color: color.withOpacity(1),
+        ),
+        const SizedBox(
+          width: space,
+        ),
+        Container(
+          width: width,
+          height: 28 * scale,
+          color: color.withOpacity(0.8),
+        ),
+        const SizedBox(
+          width: space,
+        ),
+        Container(
+          width: width,
+          height: 10 * scale,
+          color: color.withOpacity(0.4),
+        ),
+      ],
     );
   }
 }

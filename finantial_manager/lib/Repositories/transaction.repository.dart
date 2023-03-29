@@ -8,14 +8,31 @@ import 'package:finantial_manager/Repositories/user.repository.dart';
 import '../helpers/constantes.dart';
 
 class TransactionRepository {
-  static Future<Response> getAll() async {
+  static Future<Response> getAll(DateTime since, DateTime until) async {
     String url = "$urlAPI/api/Transaction";
     return dio.get(url,
+        queryParameters: {"since": since, "until": until},
         options:
             Options(headers: {"Authorization": "bearer ${UserModel().token}"}));
   }
 
-  static Future<Response> filterByType(int? type) async {
+  static Future<Response> filterByType(
+      int? type, DateTime since, DateTime until) async {
+    String url = "$urlAPI/api/Transaction";
+    return dio.get(url,
+        queryParameters: {"since": since, "until": until},
+        options: Options(
+          headers: type != null
+              ? {
+                  "type": type,
+                  "Authorization": "bearer ${UserModel().token}",
+                }
+              : {"Authorization": "bearer ${UserModel().token}"},
+        ));
+  }
+
+  static Future<Response> filterByPeriod(
+      int? type, DateTime since, DateTime until) async {
     String url = "$urlAPI/api/Transaction";
     return dio.get(url,
         options: Options(
@@ -53,7 +70,7 @@ class TransactionRepository {
 
   static Future<Response> update(TransactionModel transactionModel) async {
     String url = "$urlAPI/api/Transaction/Update";
-    return dio.post(url,
+    return dio.put(url,
         data: jsonEncode(transactionModel.toJson()),
         options:
             Options(headers: {"Authorization": "bearer ${UserModel().token}"}));
@@ -75,10 +92,13 @@ class TransactionRepository {
       }
       // return error.response;
     }));
+    dio.options.copyWith(validateStatus: (status) {
+      return status! < 500;
+    });
   }
 
   static Future<Response<dynamic>> _retry(RequestOptions requestOptions) async {
-    final options = new Options(
+    final options = Options(
       method: requestOptions.method,
       headers: requestOptions.headers,
     );

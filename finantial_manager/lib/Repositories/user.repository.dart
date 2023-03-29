@@ -13,13 +13,19 @@ class UserRepository {
   static Future<Response> register(SingInViewModel user) async {
     String url = "$urlAPI/api/Auth/register";
     print(jsonEncode(user.toJson()));
-    return userDio.post(url, data: user.toJson());
+    return userDio.post(url, data: user.toJson(),
+        options: Options(validateStatus: (status) {
+      return status! < 500;
+    }));
   }
 
   static Future<Response> login(LoginViewModel user) async {
     String url = "$urlAPI/api/Auth/login";
     print(jsonEncode(user.toJson()));
-    return userDio.post(url, data: user.toJson());
+    return userDio.post(url, data: user.toJson(),
+        options: Options(validateStatus: (status) {
+      return status! < 500;
+    }));
   }
 
   static verifyToken() {
@@ -35,8 +41,10 @@ class UserRepository {
     var res = await userDio.post(url,
         data: jsonEncode(username),
         options: Options(
-          headers: {"Cookie": cookies, "Content-Type": "application/json"},
-        ));
+            headers: {"Cookie": cookies, "Content-Type": "application/json"},
+            validateStatus: (status) {
+              return status! < 500;
+            }));
 
     localStorage.setString(
         'set-cookie', res.headers['set-cookie']![0].toString());

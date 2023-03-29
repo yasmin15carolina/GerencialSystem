@@ -47,7 +47,8 @@ class Excelfile {
     sheetObject.updateCell(CellIndex.indexByString('F1'), "Fixed",
         cellStyle: CellStyle(horizontalAlign: HorizontalAlign.Center));
 
-    List<TransactionModel> transactions = await TransactionController.getAll();
+    List<TransactionModel> transactions =
+        await TransactionController.getAll(DateTime(1900), DateTime(2500));
 
     for (var transaction in transactions) {
       List<dynamic> rowList = [];
@@ -87,15 +88,15 @@ class Excelfile {
           cellStyle: CellStyle(horizontalAlign: HorizontalAlign.Center));
     }
     excel.setDefaultSheet("Transactions");
-    var fileBytes = excel.save(fileName: "Teste.xlsx");
+    var fileBytes = excel.save(fileName: "Transactions.xlsx");
     Directory generalDownloadDir = Directory('/storage/emulated/0/Download');
     var directory = await getApplicationDocumentsDirectory();
 
-    File(join("${generalDownloadDir.path}/Teste.xlsx"))
+    File(join("${generalDownloadDir.path}/Transactions.xlsx"))
       ..createSync(recursive: true)
       ..writeAsBytesSync(fileBytes!);
 
-    return "${generalDownloadDir.path}/Teste.xlsx";
+    return "${generalDownloadDir.path}/Transactions.xlsx";
   }
 
   readTransactions(String path) {
