@@ -1,9 +1,9 @@
 # GerencialSystem
 
-• Desenvolvimento de app mobile para monitorar gastos e ganhos financeiros;
-• O usuário consegue registrar ganhos e despesas e gerar relatórios;
-• O App gera uma comparação de ganhos e gastos por período;
-• O usuário consegue importar e exportar dados através de arquivos .xlsx;
+• Desenvolvimento de app mobile para monitorar gastos e ganhos financeiros;<br>
+• O usuário consegue registrar ganhos e despesas e gerar relatórios;<br>
+• O App gera uma comparação de ganhos e gastos por período;<br>
+• O usuário consegue importar e exportar dados através de arquivos .xlsx;<br>
 • Flutter com Arquitetura MVVM;
 
 
@@ -22,12 +22,12 @@
   </tr>
 </table>
 
-API
-• Implementação de API ASP.NET Core com Banco de Dados SQL Server;
+API<br>
+• Implementação de API ASP.NET Core com Banco de Dados SQL Server;<br>
 • Serviço de Autenticação de usuários utilizando JWT Tokens;
 
 
-<iframe src="https://yasmin15carolina.github.io/swagger_api" width="100%" height="400"></iframe> 
+<Iframe src="https://yasmin15carolina.github.io/swagger_api" width="100%" height="400"></Iframe> 
 
 
 <!--![Screenshot_1680184206](https://user-images.githubusercontent.com/49843350/228862457-378af31e-4b83-462c-af5f-78b1cef9e50d.png)
